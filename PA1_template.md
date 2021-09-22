@@ -1,9 +1,16 @@
-library(tidyverse)
-library(lubridate)
-library(ggplot2)
-library(knitr)
-library(tinytex)
+---
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
 
+
+
+## Loading and preprocessing the data
+
+
+```r
 dataset_url <- paste0("https://d396qusza40orc.cloudfront.net/",
                       "repdata%2Fdata%2Factivity.zip")
 downloaded_zipfile <- "./activity.zip"
@@ -20,12 +27,24 @@ if (!file.exists(unzipped_file_folder)) {
 }
 
 activity <- read.csv(file = paste0(unzipped_file_folder, "/", "activity.csv"))
+```
 
-## what fraction of all data is NA?
+
+
+```r
 activity %>% summarize(overall_frac_NA = mean(is.na(steps)),
                        total_NAs = sum(is.na(steps)))
+```
 
-## Want to assess what fraction of the data in each interval is NA
+```
+##   overall_frac_NA total_NAs
+## 1       0.1311475      2304
+```
+
+## What is mean total number of steps taken per day?
+
+
+```r
 NA_by_interval <- activity %>%
         group_by(interval) %>%
         summarize(frac_NA = mean(is.na(steps)), count_NA = sum(is.na(steps)))
@@ -39,12 +58,22 @@ hist(total_steps_per_day$daily_step_total,
      breaks = 15,
      main = "Total Steps per Day",
      xlab = "Total Steps per Day (NAs removed)")
+```
 
-##Mean & median total steps per day
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+
+```r
 daily_step_stats <-total_steps_per_day %>%
         summarize(mean_daily_steps = mean(daily_step_total),
                   median_daily_steps = median(daily_step_total))
+```
 
+
+
+## What is the average daily activity pattern?
+
+
+```r
 avg_steps_by_interval <- activity %>%
         group_by(interval) %>%
         summarize(tot_steps = sum(steps, na.rm=TRUE),
@@ -56,12 +85,23 @@ with(avg_steps_by_interval, plot(interval, avg_steps,
         sub = "(NAs removed)",
         xlab = "5-min Interval",
         ylab = "Average Step Count"))
-    
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
+
+```r
 max_avg_steps_by_interval <- activity %>%
         group_by(interval) %>%
         summarize(avg_steps = mean(steps, na.rm=TRUE)) %>%
         slice_max(order_by = avg_steps)
+```
 
+
+## Imputing missing values
+
+
+```r
 imputed_activity <- activity %>% add_column(imputed_steps = NA)
 
 for (i in 1:nrow(imputed_activity)) {
@@ -76,7 +116,10 @@ for (i in 1:nrow(imputed_activity)) {
 }
 
 rm(i)
+```
 
+
+```r
 total_steps_per_day_imputed <- imputed_activity %>%
         group_by(date) %>%
         summarize(daily_step_total_imputed=sum(imputed_steps))
@@ -88,7 +131,15 @@ daily_step_stats_imputed <-total_steps_per_day_imputed %>%
 hist(total_steps_per_day_imputed$daily_step_total_imputed,breaks = 15,
      main = "Total Steps per Day",
      xlab = "Total Steps per Day (NAs replaced with interval mean)")
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+
+
+## Are there differences in activity patterns between weekdays and weekends?
+
+
+```r
 imputed_activity <- imputed_activity %>%
         mutate(week_day = weekdays(as.Date(date, "%Y-%m-%d")))
 
@@ -118,7 +169,10 @@ imputed_avg_steps_by_interval_weekend <- imputed_activity %>%
 
 imputed_avg_steps_by_interval <- rbind(imputed_avg_steps_by_interval_weekday,
                                        imputed_avg_steps_by_interval_weekend)
+```
 
+
+```r
 ggplot(imputed_avg_steps_by_interval, aes(interval, avg_steps)) +
         geom_line() + facet_grid(type_of_day ~ .) +
         ggtitle("Average Steps per 5-minute Interval") +
@@ -126,4 +180,7 @@ ggplot(imputed_avg_steps_by_interval, aes(interval, avg_steps)) +
         labs(x = "5-minute Interval",
              y = "Average Step Count",
              caption = "(NAs replaced with interval mean)")
-                        
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
+
