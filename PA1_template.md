@@ -3,6 +3,7 @@ title: "Reproducible Research: Peer Assessment 1"
 output: 
   html_document:
     keep_md: true
+    code_folding: hide
 ---
 
 
@@ -81,7 +82,7 @@ hist(total_steps_per_day$daily_step_total,
      xlab = "Total Steps per Day (NAs removed)")
 ```
 
-![](PA1_template_files/figure-html/histogram of total steps per day w/o NAs-1.png)<!-- -->
+![](PA1_template_files/figure-html/histogram_of_total_steps_per_day_w/o_NAs-1.png)<!-- -->
 
 Two important statistics for this data are the mean and median daily step count.
 
@@ -119,7 +120,7 @@ with(avg_steps_by_interval, plot(interval, avg_steps,
         ylab = "Average Step Count"))
 ```
 
-![](PA1_template_files/figure-html/time series plot of avg steps per interval w/o NAs-1.png)<!-- -->
+![](PA1_template_files/figure-html/time_series_plot_of_avg_steps_per_interval_w/o_NAs-1.png)<!-- -->
 
 The maximum average step count in an interval is calculated by finding the row with the highest average step count. (again noting that we have excluded the NAs in this view of the data)
 
@@ -168,7 +169,7 @@ hist(total_steps_per_day_imputed$daily_step_total_imputed,breaks = 15,
      xlab = "Total Steps per Day (NAs replaced with interval mean)")
 ```
 
-![](PA1_template_files/figure-html/histogram of daily step total using imputed step data-1.png)<!-- -->
+![](PA1_template_files/figure-html/histogram_of_daily_step_total_using_imputed_step_data-1.png)<!-- -->
 
 We can now also calculate the mean and median daily step counts using the imputed step data.
 
@@ -229,6 +230,6 @@ ggplot(imputed_avg_steps_by_interval, aes(interval, avg_steps)) +
              caption = "(NAs replaced with interval mean)")
 ```
 
-![](PA1_template_files/figure-html/two panel time series plot of avg interval step data for Weekdays and Weekends-1.png)<!-- -->
+![](PA1_template_files/figure-html/two_panel_time_series_plot_of_avg_interval_step_data_for_Weekdays_and_Weekends-1.png)<!-- -->
 
 One quick observation is that the spike in activity between 8:00 and 10:00am on weekdays is not as prominent in the weekend data and there seem to be more high step count intervals overall.
